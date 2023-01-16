@@ -8,6 +8,9 @@ import matplotlib.pyplot as plt
 import sys
 import semi_auto_writer as sw
 
+plt.style.use("seaborn-whitegrid")
+import matplotlib
+
 set_color = sw.set_color
 
 
@@ -15,9 +18,18 @@ def tgi(data, base, compare, large=1, dim_name="",color=None):
     """
     计算和两个人群在某维度上的对比,返回TGI数据集和相关描述以及图像
     data,数据集，该数据集的index必须为需要比较维度的枚举项，如性别中的“男”和“女”，列为需要比较维度，值是比例
-    base:需要比较的维度,
-    compare:对比的维度
-    lager: 一个阈值，默认为1
+    base:需要比较的维度,字符串
+    compare:对比的维度，字符串
+    lager: 一个阈值，默认为1。如果大于这个阈值，就认为是显著特征
+
+    数据表形式：
+    需要的数据表应该是数据透视表的形式，形式如下：
+
+           |  维度1 |  维度2  |
+    枚举项1 |   12  |   23    |
+    枚举项2 |   12  |   34    |
+    枚举项3 |   45  |   23    |
+
 
 
     """
@@ -36,7 +48,6 @@ def tgi(data, base, compare, large=1, dim_name="",color=None):
         "、".join([str(round(tgi_large.values[i], 2)) for i in range(len(tgi_large))]),
     )
     
-    plt.style.use("seaborn-whitegrid")
 
     if color == None:
         colors = set_color()[0]
@@ -44,7 +55,6 @@ def tgi(data, base, compare, large=1, dim_name="",color=None):
         colors = color[0]
 
     fig = plt.figure(figsize=(14, 5))
-    import matplotlib
 
     matplotlib.rcParams["font.family"] = ["Heiti TC"]
     plt.plot(
@@ -66,6 +76,13 @@ def p_stackplot(data, dim_name="",color=None):
     绘制两组数据的百分比堆积图
     data: 数据集，index 比较的枚举项，列为比较的对象
     dim_name 图表名称,默认为空
+    数据表形式：
+    需要的数据表应该是数据透视表的形式，形式如下：
+
+           |  维度1 |  维度2  |
+    枚举项1 |   12  |   23    |
+    枚举项2 |   12  |   34    |
+    枚举项3 |   45  |   23    |
     
     '''
     data_cum = data.cumsum()
@@ -73,10 +90,7 @@ def p_stackplot(data, dim_name="",color=None):
 
     fig = plt.figure(figsize=(10, 10))
     ax=fig.add_subplot(111)
-    plt.style.use("seaborn-whitegrid")
-    import matplotlib
     matplotlib.rcParams["font.family"] = ["Heiti TC"]  # 绘图
-    
      # x轴坐标刻度字体大小
     plt.yticks([0,0.2,0.4,0.6,0.8,1],[0,'20%','40%','60%','80%','100%'],fontsize=15)  # y轴坐标刻度字体大小
     plt.ylim(0, 1)  # 设置y轴范围
@@ -121,11 +135,16 @@ def v_compare(data, if_p=False, dim_name="", color=None):
     data: 数据集，index 比较的枚举项，列为比较的对象
     dim_name 图表名称,默认为空
     if_p 是否百分比，默认为不是
+    数据表形式：
+    需要的数据表应该是数据透视表的形式，形式如下：
+           |  维度1 |  维度2  |
+    枚举项1 |   12  |   23    |
+    枚举项2 |   12  |   34    |
+    枚举项3 |   45  |   23    |
     """
     fig = plt.figure(figsize=(data.shape[0] * data.shape[1], 8))
     ax = fig.add_subplot(111)
-    plt.style.use("seaborn-whitegrid")
-    import matplotlib
+
     matplotlib.rcParams["font.family"] = ["Heiti TC"] 
     x = np.arange(data.shape[0])
     plt.xticks(x, data.index, fontsize="x-large")
