@@ -1,4 +1,4 @@
-
+name = "movable_type"
 
 import os
 import sys
