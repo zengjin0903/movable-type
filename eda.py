@@ -11,11 +11,12 @@ import numpy as np
 import warnings
 import scipy.stats as stats
 import statsmodels.api as sm
-
+import matplotlib
 
 
 warnings.filterwarnings("ignore")
 np.set_printoptions(suppress=True)
+
 
 # 画图
 from plotly import graph_objects as go
@@ -64,8 +65,7 @@ def corr(data, cols=None, color="Blues"):
         corr = data[cols].corr()
 
     fig = plt.figure(figsize=(corr.shape[0] * 2, corr.shape[0] * 2))
-    import matplotlib
-
+  
     matplotlib.rcParams["font.family"] = ["Heiti TC"]
     sns.heatmap(
         corr, annot=True, annot_kws={"fontsize": "x-large"}, fmt=".2g", cmap=color
@@ -92,7 +92,6 @@ def draw_pie(data, feature, values_col, func=np.mean, color=None):
     values_col:用来计算的字段
     func：计算的函数，如果要计数的话 写 len
     """
-
     data_pie = data.groupby(feature)[values_col].apply(func)
     data_pie = data_pie.sort_values(ascending=False)
 
@@ -135,13 +134,10 @@ def draw_bar_line(data, y1_col, y2_col, if_y2_p=False, color=None):
     fig = plt.figure(figsize=(len(data.index) * (2 if len(data.index) <= 3 else 1), 5))
     ax1 = fig.add_subplot(111)
     plt.yticks(fontsize="x-large")
-
     if color == None:
         colors = set_color(num=2)
     else:
         colors = color[:2]
-
-    import matplotlib
 
     matplotlib.rcParams["font.family"] = ["Heiti TC"]
 
@@ -234,7 +230,7 @@ def four_quadrant(
 
     plt.figure(figsize=(15, 15))
     # 中文
-    import matplotlib
+
 
     matplotlib.rcParams["font.family"] = ["Heiti TC"]
     sns.scatterplot(x_col, y_col, data=data, palette="Set2", hue=hue)
