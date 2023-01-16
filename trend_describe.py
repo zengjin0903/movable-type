@@ -12,19 +12,19 @@ import warnings
 import scipy.stats as stats
 import statsmodels.api as sm
 
-
-
 warnings.filterwarnings("ignore")
 np.set_printoptions(suppress=True)
 
 # 画图
 from plotly import graph_objects as go
 from plotly.subplots import make_subplots
+import matplotlib
 import matplotlib.pyplot as plt
+plt.style.use("seaborn-whitegrid")
+
 import seaborn as sns
 
 import semi_auto_writer as sw
-
 set_color = sw.set_color
 
 
@@ -42,8 +42,19 @@ def trend_describe(
     data:数据集,
     time_range:时间区间的列表或元组，需要有起止两个时间,时间必须是datetime格式的
     value_col:需要关注的序列列名，字符串或者列表、或者元组
-    time_col:代表时间的列，默认“imp_date”
+    time_col:代表时间的列，默认“imp_date”，格式需要时“yyyy-MM-dd”的时间戳
+    holiday_col：代表是否节假日的表示，格式需为 0或1 的数值
     p:显著性水平要求，默认为0.05
+
+    数据要求：
+    最好是经过semi_auto_writer.time_handel包调整过的数据框。
+    需要有值列（value_cols）,时间列（time_col）和节假日标识列（holiday_col）
+    ...  | time_col  |  value_col1  | value_col2 | holiday_col |
+     0   | 20210101  |    34523     |    43212   |     1       |
+     1   | 20210102  |    34343     |    43512   |     1       |
+     2   | 20210103  |    34343     |    43512   |     0       |
+
+
     """
     # 如果时间序列未输入，则基于全部数据进行判断
     data = data.sort_values(time_col)
@@ -93,9 +104,18 @@ def draw_trend(data, value_cols, time_col, holiday_col, color=None):
     """
     画时序的图,
     data数据集,
-    time_range:时间区间的列表或元组，需要有起止两个时间
     value_col:需要关注的序列列名，字符串或者列表、或者元组
     time_col:代表时间的列，默认“imp_date”
+    holiday_col：代表是否节假日的表示，格式需为 0或1 的数值
+
+    数据要求：
+    最好是经过semi_auto_writer.time_handel包调整过的数据框。
+    需要有值列（value_cols）,时间列（time_col）和节假日标识列（holiday_col）
+    ...  | time_col  |  value_col1  | value_col2 | holiday_col |
+     0   | 20210101  |    34523     |    43212   |     1       |
+     1   | 20210102  |    34343     |    43512   |     1       |
+     2   | 20210103  |    34343     |    43512   |     0       |
+
     """
     ## 用数据确定周末节假日的起止时间
     data["holiday_no"] = [1] + [
@@ -110,10 +130,8 @@ def draw_trend(data, value_cols, time_col, holiday_col, color=None):
         else:
             data.holiday_no2.iloc[i] = data.holiday_no2.iloc[i - 1]
 
-    plt.style.use("seaborn-whitegrid")
-
+    
     fig = plt.figure(figsize=(14, 5))
-    import matplotlib
     matplotlib.rcParams["font.family"] = ["Heiti TC"]
 
     if color == None:
@@ -124,7 +142,7 @@ def draw_trend(data, value_cols, time_col, holiday_col, color=None):
     plt.plot(
         data[time_col],
         data[value_cols],
-        "-o",
+        "-",
         color=colors[0]
     )
 
@@ -153,6 +171,16 @@ def draw_trend_stack(data, value_cols, time_col, holiday_col, color=None):
     time_range:时间区间的列表或元组，需要有起止两个时间
     value_col:需要关注的序列列名，字符串或者列表、或者元组
     time_col:代表时间的列，默认“imp_date”
+
+    holiday_col：代表是否节假日的表示，格式需为 0或1 的数值
+
+    数据要求：
+    最好是经过semi_auto_writer.time_handel包调整过的数据框。
+    需要有值列（value_cols）,时间列（time_col）和节假日标识列（holiday_col）
+    ...  | time_col  |  value_col1  | value_col2 | holiday_col |
+     0   | 20210101  |    34523     |    43212   |     1       |
+     1   | 20210102  |    34343     |    43512   |     1       |
+     2   | 20210103  |    34343     |    43512   |     0       |
     """
     ## 用数据确定周末节假日的起止时间
     data["holiday_no"] = [1] + [
@@ -167,10 +195,7 @@ def draw_trend_stack(data, value_cols, time_col, holiday_col, color=None):
         else:
             data.holiday_no2.iloc[i] = data.holiday_no2.iloc[i - 1]
 
-    plt.style.use("seaborn-whitegrid")
-
     fig = plt.figure(figsize=(14, 5))
-    import matplotlib
     matplotlib.rcParams["font.family"] = ["Heiti TC"]
 
     # 颜色设置
@@ -231,6 +256,14 @@ def time_compare_describe(
     focus_time:报告期,需要列表
     basic_time:基期,需要列表
      p=0.05:阈值 
+
+    数据要求：
+    最好是经过semi_auto_writer.time_handel包调整过的数据框。
+    需要有值列（value_cols）,时间列（time_col）和节假日标识列（holiday_col）
+    ...  | time_col  |  value_col1  | value_col2 | holiday_col |
+     0   | 20210101  |    34523     |    43212   |     1       |
+     1   | 20210102  |    34343     |    43512   |     1       |
+     2   | 20210103  |    34343     |    43512   |     0       |
     
     '''
     data = data.sort_values(time_col)
